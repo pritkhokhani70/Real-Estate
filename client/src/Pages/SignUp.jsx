@@ -1,11 +1,12 @@
 import React,{ useState } from 'react'
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
+import { toast } from 'react-hot-toast'
 
 const SignUp = () => {
-  const [formdata, setFormdata] = useState({
-    username: '',
-
-  })
+  const [formdata, setFormdata] = useState({});
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   console.log(formdata);
 
   const handlechange = (event) => {
@@ -16,20 +17,39 @@ const SignUp = () => {
       }
     )
   }
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const res = await fetch('/api/auth/signup',
-    {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(formdata),
+    setLoading(true)
+    try {
+
+      const res = await fetch('/api/auth/signup',
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(formdata),
+      }
+      );
+      const data = await res.json();
+      // console.log(data,"data");
+      if (data.success === false) {
+        toast.error(data.message);
+        setLoading(false);
+        return;
+      }
+      else{
+        toast.success(data);
+      }
+      setLoading(false);
+      navigate('/sign-in');
+
+    } catch (error) {
+      toast.error(error.message);
+      setLoading(false);
     }
-    );
-    const data = await res.json();
-    console.log(data);
   }
 
   return (
@@ -59,9 +79,10 @@ const SignUp = () => {
         />
 
         <button
+          disabled={loading}
           className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
         >
-        Sign Up
+        {loading ? 'Loading...' : 'Sign Up'}
         </button>
       </form>
       <div className='flex gap-2 mt-5'>
