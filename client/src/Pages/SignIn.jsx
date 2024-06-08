@@ -1,21 +1,38 @@
 import { useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
+<<<<<<< Updated upstream
 import { toast } from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
 
 const SignIn = () => {
   const [formdata, setFormdata] = useState({});
+=======
+import { useDispatch, useSelector } from 'react-redux'
+import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
+import OAuth from '../Component/OAuth';
+
+const SignIn = () => {
+  const [formdata, setFormdata] = useState({
+    email: '',
+    password: ''
+  });
+>>>>>>> Stashed changes
   const { loading, error } = useSelector((state) => state.user)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   
+<<<<<<< Updated upstream
   const handlechange = (event) => {
+=======
+  const handleChange = (event) => {
+>>>>>>> Stashed changes
     setFormdata({
       ...formdata,
       [event.target.id]: event.target.value
     });
   }
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -30,6 +47,7 @@ const SignIn = () => {
         body: JSON.stringify(formdata),
       });
 
+<<<<<<< Updated upstream
       const data = await res.json();
       if (!data.success) {
         dispatch(signInFailure(data.message));
@@ -43,6 +61,19 @@ const SignIn = () => {
     } catch (error) {
       dispatch(signInFailure(error.message));
       toast.error(error.message);
+=======
+      
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(signInFailure(data.message));
+        return; 
+      }
+      
+      dispatch(signInSuccess(data));
+      navigate('/'); 
+    } catch (error) {
+      dispatch(signInFailure(error.message));
+>>>>>>> Stashed changes
     }
   }
 
@@ -55,14 +86,14 @@ const SignIn = () => {
           placeholder='Email'
           className='border p-3 rounded-lg'
           id='email'
-          onChange={handlechange}
+          onChange={handleChange}
         />
         <input
           type='password'
           placeholder='Password'
           className='border p-3 rounded-lg'
           id='password'
-          onChange={handlechange}
+          onChange={handleChange}
         />
 
         <button
@@ -71,6 +102,7 @@ const SignIn = () => {
         >
           {loading ? 'Loading...' : 'Sign In'}
         </button>
+        <OAuth/>
       </form>
       <div className='flex gap-2 mt-5'>
         <p>Don't have an account?</p>
@@ -78,7 +110,11 @@ const SignIn = () => {
           <span className='text-blue-700'>Sign up</span>
         </Link>
       </div>
+<<<<<<< Updated upstream
       {/* {error && <p className='text-red-600'>{error}</p>} */}
+=======
+      {error && <p className='text-red-600'>{error}</p>}
+>>>>>>> Stashed changes
     </div>
   )
 }
