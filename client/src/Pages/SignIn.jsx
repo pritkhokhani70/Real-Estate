@@ -1,122 +1,98 @@
-import { useState } from 'react'
-import { Link, useNavigate } from "react-router-dom";
-<<<<<<< Updated upstream
+import React,{ useState } from 'react'
+import { Link,useNavigate } from "react-router-dom";
 import { toast } from 'react-hot-toast'
-import { useDispatch, useSelector } from 'react-redux'
-import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
-
-const SignIn = () => {
-  const [formdata, setFormdata] = useState({});
-=======
-import { useDispatch, useSelector } from 'react-redux'
-import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
 import OAuth from '../Component/OAuth';
 
-const SignIn = () => {
-  const [formdata, setFormdata] = useState({
-    email: '',
-    password: ''
-  });
->>>>>>> Stashed changes
-  const { loading, error } = useSelector((state) => state.user)
+const SignUp = () => {
+  const [formdata, setFormdata] = useState({});
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  
-<<<<<<< Updated upstream
+  console.log(formdata);
+
   const handlechange = (event) => {
-=======
-  const handleChange = (event) => {
->>>>>>> Stashed changes
-    setFormdata({
-      ...formdata,
-      [event.target.id]: event.target.value
-    });
+    setFormdata(
+      {
+        ...formdata,
+        [event.target.id]: event.target.value
+      })
   }
   
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+    setLoading(true)
     try {
-      dispatch(signInStart());
-      const res = await fetch('/api/auth/signin', {
+
+      const res = await fetch('/api/auth/signup',
+      {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'content-type': 'application/json',
         },
         body: JSON.stringify(formdata),
-      });
-
-<<<<<<< Updated upstream
+      }
+      );
       const data = await res.json();
-      if (!data.success) {
-        dispatch(signInFailure(data.message));
+      // console.log(data,"data");
+      if (data.success === false) {
         toast.error(data.message);
+        setLoading(false);
         return;
       }
-      
-      dispatch(signInSuccess(data));
-      toast.success("Login success");
-      navigate('/');
-    } catch (error) {
-      dispatch(signInFailure(error.message));
-      toast.error(error.message);
-=======
-      
-      const data = await res.json();
-      if (!res.ok) {
-        dispatch(signInFailure(data.message));
-        return; 
+      else{
+        toast.success(data);
       }
-      
-      dispatch(signInSuccess(data));
-      navigate('/'); 
+      setLoading(false);
+      navigate('/sign-in');
+
     } catch (error) {
-      dispatch(signInFailure(error.message));
->>>>>>> Stashed changes
+      toast.error(error.message);
+      setLoading(false);
     }
   }
 
   return (
     <div className='p-3 max-w-lg mx-auto'>
-      <h1 className='text-3xl text-center font-semibold my-7'>Sign In</h1>
-      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
+      <h1 className='text-3xl text-center font-semibold my-7'>Sign Up</h1>
+      <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+        <input
+          type='text'
+          placeholder='username'
+          className='border p-3 rounded-lg'
+          id='username'
+          onChange={handlechange}
+        />
         <input
           type='email'
-          placeholder='Email'
+          placeholder='email'
           className='border p-3 rounded-lg'
           id='email'
-          onChange={handleChange}
+          onChange={handlechange}
         />
         <input
           type='password'
-          placeholder='Password'
+          placeholder='password'
           className='border p-3 rounded-lg'
           id='password'
-          onChange={handleChange}
+          onChange={handlechange}
         />
 
         <button
           disabled={loading}
           className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
         >
-          {loading ? 'Loading...' : 'Sign In'}
+        {loading ? 'Loading...' : 'Sign Up'}
         </button>
-        <OAuth/>
+        <OAuth/> 
       </form>
       <div className='flex gap-2 mt-5'>
-        <p>Don't have an account?</p>
-        <Link to={'/sign-up'}>
-          <span className='text-blue-700'>Sign up</span>
+        <p>Have an account?</p>
+        <Link to={'/sign-in'}>
+          <span className='text-blue-700'>Sign in</span>
         </Link>
       </div>
-<<<<<<< Updated upstream
-      {/* {error && <p className='text-red-600'>{error}</p>} */}
-=======
-      {error && <p className='text-red-600'>{error}</p>}
->>>>>>> Stashed changes
     </div>
   )
 }
 
-export default SignIn;
+export default SignUp
