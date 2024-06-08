@@ -1,51 +1,48 @@
 import { useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from 'react-hot-toast'
+import { useDispatch, useSelector } from 'react-redux'
+import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
 
 const SignIn = () => {
   const [formdata, setFormdata] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user)
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  
   const handlechange = (event) => {
-    setFormdata(
-      {
-        ...formdata,
-        [event.target.id]: event.target.value
-      }
-    )
+    setFormdata({
+      ...formdata,
+      [event.target.id]: event.target.value
+    });
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setLoading(true)
+    
     try {
-
-      const res = await fetch('/api/auth/signin',
-      {
+      dispatch(signInStart());
+      const res = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: {
-          'content-type': 'application/json',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(formdata),
-      }
-      );
+      });
+
       const data = await res.json();
-      // console.log(data,"data");
-      if (data.success === false) {
+      if (!data.success) {
+        dispatch(signInFailure(data.message));
         toast.error(data.message);
-        setLoading(false);
         return;
       }
-      else{
-        toast.success("login successfully");
-      }
-      setLoading(false);
+      
+      dispatch(signInSuccess(data));
+      toast.success("Login success");
       navigate('/');
     } catch (error) {
+      dispatch(signInFailure(error.message));
       toast.error(error.message);
-      setLoading(false);
     }
   }
 
@@ -55,14 +52,14 @@ const SignIn = () => {
       <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <input
           type='email'
-          placeholder='email'
+          placeholder='Email'
           className='border p-3 rounded-lg'
           id='email'
           onChange={handlechange}
         />
         <input
           type='password'
-          placeholder='password'
+          placeholder='Password'
           className='border p-3 rounded-lg'
           id='password'
           onChange={handlechange}
@@ -76,13 +73,14 @@ const SignIn = () => {
         </button>
       </form>
       <div className='flex gap-2 mt-5'>
-        <p>Dont have an account?</p>
+        <p>Don't have an account?</p>
         <Link to={'/sign-up'}>
           <span className='text-blue-700'>Sign up</span>
         </Link>
       </div>
+      {/* {error && <p className='text-red-600'>{error}</p>} */}
     </div>
   )
 }
 
-export default SignIn
+export default SignIn;

@@ -4,7 +4,6 @@ import { toast } from 'react-hot-toast'
 
 const SignUp = () => {
   const [formdata, setFormdata] = useState({});
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   console.log(formdata);
